@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Intrinsic.h>
@@ -30,7 +32,7 @@ XtResource resources[] = {
 		Offset(num_fields), XtRImmediate, (XtPointer) 3 },
 	{ "command", "Command", XtRString, sizeof(String),
 		Offset(command), XtRString,
-	"vmstat 1 2 | awk '{if (NR == 4) print $(NF-2), $(NF-1), $(NF)}'"}
+	"vmstat 1 2 | awk '{if (NR == 4) print $(NF-2), $(NF-1), $(NF)}'" },
 };
 #undef Offset
 

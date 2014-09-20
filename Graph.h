@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #ifndef _Graph_h
 #define _Graph_h
 

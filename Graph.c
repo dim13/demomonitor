@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include "GraphP.h"

@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #ifndef _GraphDisplay_h
 #define _GraphDisplay_h
 
