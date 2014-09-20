@@ -317,4 +317,3 @@ Resize(Widget w)
 		(*(XtClass(w)->core_class.expose))(w, NULL, NULL);
 	}
 }
-	
