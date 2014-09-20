@@ -1,3 +1,5 @@
+# $Id$
+
 PROG=	demomonitor
 SRCS=	demomonitor.c Graph.c GraphDisplay.c BarDisplay.c
 NOMAN=
