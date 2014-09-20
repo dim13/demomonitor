@@ -65,11 +65,10 @@ main(int argc, char **argv)
 		optionsDesc, XtNumber(optionsDesc), &argc, argv,
 		fallback_resources, NULL, 0);
 	XtAppAddActions(app, actionsList, XtNumber(actionsList));
-	XtOverrideTranslations(toplevel,
-		XtParseTranslationTable("<Key>q: quit()"));
-
 	XtGetApplicationResources(toplevel, (XtPointer)&options,
 		resources, XtNumber(resources), NULL, 0);
+	XtOverrideTranslations(toplevel,
+		XtParseTranslationTable("<Key>q: quit()"));
 	fields = (int *)XtCalloc(options.num_fields, sizeof(int));
 
 	CreateGraphWidget(toplevel);
