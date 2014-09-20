@@ -224,6 +224,7 @@ SetValues(Widget old,
 			label = newgraph->graph.labels[i];
 
 	return NE(num_entries) || NE(labels) || NE(max_value);
+#undef EQ
 #undef NE
 }
 
