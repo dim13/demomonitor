@@ -113,7 +113,6 @@ SetValues(Widget old,
 	GraphDisplayObject newgd = (GraphDisplayObject) new;
 
 #define NE(field)	(newgd->field != oldgd->field)
-
 	if (NE(graphDisplay.foreground) || NE(graphDisplay.font->fid)) {
 		XtReleaseGC(new, oldgd->graphDisplay.gc);
 		newgd->graphDisplay.gc = GetGC(newgd);
@@ -123,7 +122,6 @@ SetValues(Widget old,
 		XClearArea(XtDisplayOfObject(new),
 			XtWindowOfObject(new), 0, 0, 0, 0, True);
 #undef NE
-	
 	return False;
 }
 
