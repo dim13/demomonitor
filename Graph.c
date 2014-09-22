@@ -177,16 +177,11 @@ Initialize(Widget request,
 	GraphWidget gw = (GraphWidget) new;
 	int *values;
 	int i;
-	String label;
 
 	values = (int *)XtCalloc(gw->graph.num_entries, sizeof(int));
 	for (i = 0; i < gw->graph.num_entries; i++)
 		values[i] = gw->graph.values[i];
 	gw->graph.values = values;
-
-	if (gw->graph.labels != NULL)
-		for (i = 0; i < gw->graph.num_entries; i++)
-			label = gw->graph.labels[i];
 }
 
 static Boolean
@@ -199,12 +194,9 @@ SetValues(Widget old,
 	GraphWidget oldgraph = (GraphWidget) old;
 	GraphWidget newgraph = (GraphWidget) new;
 	int *values;
-	String label;
 	int i;
 
 #define NE(field)	(newgraph->graph.field != oldgraph->graph.field)
-#define EQ(field)	(newgraph->graph.field == oldgraph->graph.field)
-
 	if (NE(values)) {
 		values = (int *)XtCalloc(newgraph->graph.num_entries, sizeof(int));
 		XtFree((XtPointer)oldgraph->graph.values);
@@ -214,19 +206,16 @@ SetValues(Widget old,
 		return True;
 	}
 
+#define EQ(field)	(!NE(field))
 	if (NE(num_entries) && (EQ(labels) || EQ(values))) {
 		XtAppErrorMsg(XtWidgetToApplicationContext(new),
 			"counterError", "numEntries", "WidgetError",
 			"Number of graph entries changed but not labels of values",
 			NULL, NULL);
 	}
-
-	if (NE(labels) && newgraph->graph.labels != NULL)
-		for (i = 0; i < newgraph->graph.num_entries; i++)
-			label = newgraph->graph.labels[i];
+#undef EQ
 
 	return NE(num_entries) || NE(labels) || NE(max_value);
-#undef EQ
 #undef NE
 }
 

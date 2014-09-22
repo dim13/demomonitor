@@ -117,11 +117,11 @@ SetValues(Widget old,
 		XtReleaseGC(new, oldgd->graphDisplay.gc);
 		newgd->graphDisplay.gc = GetGC(newgd);
 	}
+#undef NE
 
 	if (XtIsRealized(XtParent((Widget)newgd)))
 		XClearArea(XtDisplayOfObject(new),
 			XtWindowOfObject(new), 0, 0, 0, 0, True);
-#undef NE
 	return False;
 }
 
