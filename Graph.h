@@ -3,8 +3,6 @@
 #ifndef _Graph_h
 #define _Graph_h
 
-// #include <X11/Intrinsic.h>
-
 #define XtNnumEntries	"numEntries"
 #define XtCNumEntries	"NumEntries"
 #define XtNlabels	"labels"

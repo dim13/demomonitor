@@ -3,7 +3,6 @@
 #ifndef _GraphDisplayP_h
 #define _GraphDisplayP_h
 
-// #include <X11/CoreP.h>
 #include "GraphDisplay.h"
 
 typedef struct {
