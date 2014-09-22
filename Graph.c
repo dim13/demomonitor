@@ -35,6 +35,7 @@ static CompositeClassExtensionRec compositeExtension = {
 	.version		= XtCompositeExtensionVersion,
 	.record_size		= sizeof(CompositeClassExtensionRec),
 	.accepts_objects	= True,
+	.allows_change_managed_set = False,
 };
 
 GraphClassRec graphClassRec = {
