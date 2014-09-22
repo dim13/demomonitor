@@ -6,27 +6,27 @@
 #include "GraphDisplay.h"
 
 typedef struct {
-	Pixel foreground;
-	XFontStruct *font;
-	GC gc;
+	Pixel			foreground;
+	XFontStruct		*font;
+	GC			gc;
 } GraphDisplayPart;
 
 typedef struct _GraphDisplayRec {
-	ObjectPart object;
-	GraphDisplayPart graphDisplay;
+	ObjectPart		object;
+	GraphDisplayPart	graphDisplay;
 } GraphDisplayRec;
 
 typedef void (*ComputeSizeProc)();
 
 typedef struct {
-	ComputeSizeProc compute_size;
-	XtExposeProc expose;
-	XtPointer extension;
+	ComputeSizeProc		compute_size;
+	XtExposeProc		expose;
+	XtPointer		extension;
 } GraphDisplayClassPart;
 
 typedef struct _GraphDisplayClassRec {
-	ObjectClassPart object_class;
-	GraphDisplayClassPart graphDisplay_class;
+	ObjectClassPart		object_class;
+	GraphDisplayClassPart	graphDisplay_class;
 } GraphDisplayClassRec, *GraphDisplayObjectClass;
 
 extern GraphDisplayClassRec graphDisplayClassRec;
