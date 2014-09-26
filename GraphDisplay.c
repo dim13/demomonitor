@@ -102,10 +102,7 @@ SetValues(Widget old,
 	}
 #undef NE
 
-	if (XtIsRealized(XtParent((Widget)newgd)))
-		XClearArea(XtDisplayOfObject(new),
-			XtWindowOfObject(new), 0, 0, 0, 0, True);
-	return False;
+	return XtIsRealized(XtParent(new));
 }
 
 static void

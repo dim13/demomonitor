@@ -79,15 +79,8 @@ SetValues(Widget old,
 	BarDisplayObject newbd = (BarDisplayObject) new;
 
 #define NE(field)	(oldbd->barDisplay.field != newbd->barDisplay.field)
-
-	if (NE(space) || NE(format)) {
-		if (XtIsRealized(XtParent((Widget)newbd)))
-			XClearArea(XtDisplayOfObject(new),
-				XtWindowOfObject(new), 0, 0, 0, 0, True);
+	return XtIsRealized(XtParent(new)) && (NE(space) || NE(format));
 #undef NE
-	}
-	
-	return False;
 }
 
 static void

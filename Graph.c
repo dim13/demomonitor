@@ -24,7 +24,6 @@ static void ClassInitialize();
 static void Initialize();
 static void Redisplay();
 static void Destroy();
-static void Resize();
 static void Realize();
 static void InsertChild();
 static Boolean SetValues();
@@ -59,7 +58,7 @@ GraphClassRec graphClassRec = {
 		.compress_enterleave	= True,
 		.visible_interest	= False,
 		.destroy		= Destroy,
-		.resize			= Resize,
+		.resize			= NULL,
 		.expose			= Redisplay,
 		.set_values		= SetValues,
 		.set_values_hook	= NULL,
@@ -229,7 +228,9 @@ InsertChild(Widget w)
 {
 	String params[2];
 	Cardinal num_params;
-	CompositeWidget parent = (CompositeWidget) XtParent(w);
+	CompositeWidget parent = (CompositeWidget)XtParent(w);
+	CompositeWidgetClass superClass = (CompositeWidgetClass)
+		graphWidgetClass->core_class.superclass;
 	GraphDisplayObjectClass childClass;
 
 	if (!XtIsSubclass(w, graphDisplayObjectClass)) {
@@ -251,8 +252,7 @@ InsertChild(Widget w)
 			params, &num_params);
 	}
 
-	(*((CompositeWidgetClass)(graphWidgetClass->
-		core_class.superclass))->composite_class.insert_child)(w);
+	superClass->composite_class.insert_child(w);
 
 	childClass = (GraphDisplayObjectClass)XtClass(w);
 	if (childClass->graphDisplay_class.compute_size != NULL)
@@ -293,13 +293,4 @@ Redisplay(Widget w,
 	childClass = (GraphDisplayObjectClass)XtClass((Widget)d);
 	if (childClass->graphDisplay_class.expose != NULL)
 		(*childClass->graphDisplay_class.expose)(w, event, region);
-}
-
-static void
-Resize(Widget w)
-{
-	if (XtIsRealized(w)) {
-		XClearWindow(XtDisplay(w), XtWindow(w));
-		(*(XtClass(w)->core_class.expose))(w, NULL, NULL);
-	}
 }
