@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #include <stdio.h>
 #include <string.h>
 #include <X11/IntrinsicP.h>

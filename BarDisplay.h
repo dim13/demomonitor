@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #ifndef _BarDisplay_h
 #define _BarDisplay_h
 
