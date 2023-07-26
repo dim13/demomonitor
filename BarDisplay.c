@@ -19,10 +19,10 @@ static XtResource resources[] = {
 };
 #undef Offset
 
-static void Initialize();
-static void Redisplay();
-static void ComputeSize();
-static Boolean SetValues();
+static void Initialize(Widget, Widget, ArgList, Cardinal *);
+static void Redisplay(Widget, XEvent *, Region);
+static void ComputeSize(Widget);
+static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 
 BarDisplayClassRec barDisplayClassRec = {
 	.object_class = {
@@ -118,45 +118,47 @@ ComputeLabelDimensions(BarDisplayObject bd,
 }
 
 static void
-ComputeSize(GraphWidget w)
+ComputeSize(Widget w)
 {
-	BarDisplayObject bd = (BarDisplayObject) w->composite.children[0];
+	GraphWidget gw = (GraphWidget) w;
+	BarDisplayObject bd = (BarDisplayObject) gw->composite.children[0];
 	Dimension label_width, total_width, label_height;
 
 	ComputeLabelDimensions(bd, &label_width, &total_width, &label_height);
 
-	if (w->core.width == 0) {
-		w->core.width = 4 * bd->barDisplay.space + total_width +
+	if (gw->core.width == 0) {
+		gw->core.width = 4 * bd->barDisplay.space + total_width +
 			bd->barDisplay.default_graph_width;
 	}
 
-	if (w->core.height == 0) {
-		w->core.height = w->graph.num_entries * (bd->barDisplay.space +
+	if (gw->core.height == 0) {
+		gw->core.height = gw->graph.num_entries * (bd->barDisplay.space +
 			label_height) + bd->barDisplay.space;
 	}
 }
 
 static void
-Redisplay(GraphWidget w,
+Redisplay(Widget w,
 	XEvent *event,
 	Region region)
 {
-	BarDisplayObject bd = (BarDisplayObject) w->composite.children[0];
+	GraphWidget gw = (GraphWidget) w;
+	BarDisplayObject bd = (BarDisplayObject) gw->composite.children[0];
 	Dimension label_width, total_width, label_height;
 	Boolean displayBars;
 	int i;
 	int x, y, bar_width;
 	char buf[100];
-	int *values = w->graph.values;
-	String *labels = w->graph.labels;
+	int *values = gw->graph.values;
+	String *labels = gw->graph.labels;
 
 	ComputeLabelDimensions(bd, &label_width, &total_width, &label_height);
 
-	bar_width = w->core.width - total_width - 4 * bd->barDisplay.space;
+	bar_width = gw->core.width - total_width - 4 * bd->barDisplay.space;
 	displayBars = (bar_width > (int)bd->barDisplay.space);
 
 	y = bd->barDisplay.space;
-	for (i = 0; i < w->graph.num_entries; i++) {
+	for (i = 0; i < gw->graph.num_entries; i++) {
 		if (labels != NULL) {
 			XDrawString(XtDisplay(w), XtWindow(w),
 				bd->graphDisplay.gc,
@@ -170,14 +172,14 @@ Redisplay(GraphWidget w,
 		if (displayBars) {
 			XFillRectangle(XtDisplay(w), XtWindow(w),
 				bd->graphDisplay.gc, x, y,
-				bar_width * values[i] / w->graph.max_value,
+				bar_width * values[i] / gw->graph.max_value,
 				bd->graphDisplay.font->max_bounds.ascent);
-			x += bar_width * values[i] / w->graph.max_value +
+			x += bar_width * values[i] / gw->graph.max_value +
 				bd->barDisplay.space;
 		}
 
 		snprintf(buf, sizeof(buf), bd->barDisplay.format,
-			(float) values[i] / w->graph.scale);
+			(float) values[i] / gw->graph.scale);
 		XDrawString(XtDisplay(w), XtWindow(w), bd->graphDisplay.gc,
 			x, y + bd->graphDisplay.font->max_bounds.ascent,
 			buf, strlen(buf));

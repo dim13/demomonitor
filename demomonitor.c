@@ -11,8 +11,8 @@ XtAppContext app;
 Widget graph;
 int *fields;
 
-void Timer();
-void CreateGraphWidget();
+void Timer(XtPointer, XtIntervalId *);
+void CreateGraphWidget(Widget);
 void GetGraphData();
 void quit();
 
@@ -32,7 +32,7 @@ XtResource resources[] = {
 		Offset(num_fields), XtRImmediate, (XtPointer) 3 },
 	{ "command", "Command", XtRString, sizeof(String),
 		Offset(command), XtRString,
-	"vmstat 1 2 | awk '{if (NR == 4) print $(NF-2), $(NF-1), $(NF)}'" },
+		"vmstat 1 2 | awk '{if (NR == 4) print $(NF-2), $(NF-1), $(NF)}'" },
 };
 #undef Offset
 

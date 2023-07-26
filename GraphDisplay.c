@@ -13,10 +13,10 @@ static XtResource resources[] = {
 };
 #undef Offset
 
-static void ClassPartInitialize();
-static void Initialize();
-static void Destroy();
-static Boolean SetValues();
+static void ClassPartInitialize(WidgetClass);
+static void Initialize(Widget, Widget, ArgList, Cardinal *);
+static void Destroy(Widget);
+static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 
 GraphDisplayClassRec graphDisplayClassRec = {
 	.object_class = {

@@ -16,7 +16,7 @@ typedef struct _GraphDisplayRec {
 	GraphDisplayPart	graphDisplay;
 } GraphDisplayRec;
 
-typedef void (*ComputeSizeProc)();
+typedef void (*ComputeSizeProc)(Widget);
 
 typedef struct {
 	ComputeSizeProc		compute_size;

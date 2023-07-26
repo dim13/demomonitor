@@ -21,12 +21,12 @@ static XtResource resources[] = {
 #undef Offset
 
 static void ClassInitialize();
-static void Initialize();
-static void Redisplay();
-static void Destroy();
-static void Realize();
-static void InsertChild();
-static Boolean SetValues();
+static void Initialize(Widget, Widget, ArgList, Cardinal *);
+static void Redisplay(Widget, XEvent *, Region);
+static void Destroy(Widget);
+static void Realize(Widget, XtValueMask *, XSetWindowAttributes *);
+static void InsertChild(Widget);
+static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 
 static CompositeClassExtensionRec compositeExtension = {
 	.next_extension			= NULL,
@@ -256,7 +256,7 @@ InsertChild(Widget w)
 
 	childClass = (GraphDisplayObjectClass)XtClass(w);
 	if (childClass->graphDisplay_class.compute_size != NULL)
-		(*childClass->graphDisplay_class.compute_size)(parent);
+		(*childClass->graphDisplay_class.compute_size)((Widget)parent);
 }
 
 static void
