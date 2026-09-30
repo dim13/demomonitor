@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include "Graph.h"
@@ -125,13 +126,13 @@ GetGraphData(void)
 	FILE *f;
 	int i;
 
+	memset(fields, 0, options.num_fields * sizeof(int));
+
 	f = popen(options.command, "r");
 	if (f == NULL) {
 		XtAppWarningMsg(app, "noData", "getGraphData",
 			"DemoLoadError", "Cannot run command",
 			NULL, NULL);
-		for (i = 0; i < options.num_fields; i++)
-			fields[i] = 0;
 		return;
 	}
 
@@ -141,8 +142,6 @@ GetGraphData(void)
 			XtAppWarningMsg(app, "noData", "getGraphData",
 				"DemoLoadError", "Not enough fields in data",
 				NULL, NULL);
-			for (; i < options.num_fields; i++)
-				fields[i] = 0;
 			break;
 		}
 	}

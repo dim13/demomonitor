@@ -121,13 +121,11 @@ CvtStringToStringList(Display *dpy,
 
 		list = (String *)XtCalloc(count + 1, sizeof(String));
 		for (i = 0; i < count; i++) {
-			for (ch = start; *ch != '\n' && *ch != '\0'; ch++)
-				;
-			len = ch - start;
+			len = strcspn(start, "\n");
 			list[i] = XtMalloc(len + 1);
 			strncpy(list[i], start, len);
 			list[i][len] = '\0';
-			start = ch + 1;
+			start += len + 1;
 		}
 	}
 	if (to->addr == NULL)
@@ -195,15 +193,13 @@ Initialize(Widget request,
 {
 	GraphWidget gw = (GraphWidget) new;
 	int *values;
-	int i;
 
 	CheckEntries(gw);
 
 	values = (int *)XtCalloc(gw->graph.num_entries, sizeof(int));
-	if (gw->graph.values != NULL) {
-		for (i = 0; i < gw->graph.num_entries; i++)
-			values[i] = gw->graph.values[i];
-	}
+	if (gw->graph.values != NULL)
+		memcpy(values, gw->graph.values,
+			gw->graph.num_entries * sizeof(int));
 	gw->graph.values = values;
 }
 
@@ -217,7 +213,6 @@ SetValues(Widget old,
 	GraphWidget oldgraph = (GraphWidget) old;
 	GraphWidget newgraph = (GraphWidget) new;
 	int *values;
-	int i;
 
 #define NE(field)	(newgraph->graph.field != oldgraph->graph.field)
 #define EQ(field)	(!NE(field))
@@ -234,8 +229,8 @@ SetValues(Widget old,
 	if (NE(values)) {
 		values = (int *)XtCalloc(newgraph->graph.num_entries, sizeof(int));
 		XtFree((XtPointer)oldgraph->graph.values);
-		for (i = 0; i < newgraph->graph.num_entries; i++)
-			values[i] = newgraph->graph.values[i];
+		memcpy(values, newgraph->graph.values,
+			newgraph->graph.num_entries * sizeof(int));
 		newgraph->graph.values = values;
 		return True;
 	}

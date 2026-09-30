@@ -163,6 +163,7 @@ Redisplay(Widget w,
 	char buf[100];
 	int *values = gw->graph.values;
 	String *labels = gw->graph.labels;
+	int ascent = bd->graphDisplay.font->max_bounds.ascent;
 
 	ComputeLabelDimensions(bd, &label_width, &total_width, &label_height);
 
@@ -175,7 +176,7 @@ Redisplay(Widget w,
 			XDrawString(XtDisplay(w), XtWindow(w),
 				bd->graphDisplay.gc,
 				bd->barDisplay.space,
-				y + bd->graphDisplay.font->max_bounds.ascent,
+				y + ascent,
 				labels[i], strlen(labels[i]));
 			x = label_width + 2 * bd->barDisplay.space;
 		} else
@@ -189,15 +190,14 @@ Redisplay(Widget w,
 				v = gw->graph.max_value;
 			len = bar_width * v / gw->graph.max_value;
 			XFillRectangle(XtDisplay(w), XtWindow(w),
-				bd->graphDisplay.gc, x, y, len,
-				bd->graphDisplay.font->max_bounds.ascent);
+				bd->graphDisplay.gc, x, y, len, ascent);
 			x += len + bd->barDisplay.space;
 		}
 
 		snprintf(buf, sizeof(buf), bd->barDisplay.format,
 			(float) values[i] / gw->graph.scale);
 		XDrawString(XtDisplay(w), XtWindow(w), bd->graphDisplay.gc,
-			x, y + bd->graphDisplay.font->max_bounds.ascent,
+			x, y + ascent,
 			buf, strlen(buf));
 		y += label_height + bd->barDisplay.space;
 	}
