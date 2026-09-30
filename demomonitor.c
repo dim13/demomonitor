@@ -91,30 +91,20 @@ main(int argc, char **argv)
 void
 CreateGraphWidget(Widget parent)
 {
-	Arg args[10];
-	int n;
-
 	GetGraphData();
 
-	n = 0;
-	XtSetArg(args[n], XtNnumEntries, options.num_fields);	n++;
-	XtSetArg(args[n], XtNvalues, fields);			n++;
-	graph = XtCreateManagedWidget("graph", graphWidgetClass, parent,
-		args, n);
+	graph = XtVaCreateManagedWidget("graph", graphWidgetClass, parent,
+		XtNnumEntries, options.num_fields,
+		XtNvalues, fields,
+		NULL);
 	XtCreateWidget("bar", barDisplayObjectClass, graph, NULL, 0);
 }
 
 void
 Timer(XtPointer client_data, XtIntervalId *id)
 {
-	Arg args[10];
-	int n;
-
 	GetGraphData();
-
-	n = 0;
-	XtSetArg(args[n], XtNvalues, fields);			n++;
-	XtSetValues(graph, args, n);
+	XtVaSetValues(graph, XtNvalues, fields, NULL);
 
 	XtAppAddTimeOut(app, options.timeout * 1000, Timer, NULL);
 }
