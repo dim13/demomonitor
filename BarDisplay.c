@@ -18,6 +18,7 @@ static XtResource resources[] = {
 #undef Offset
 
 static void Initialize(Widget, Widget, ArgList, Cardinal *);
+static void Destroy(Widget);
 static void Redisplay(Widget, XEvent *, Region);
 static void ComputeSize(Widget);
 static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
@@ -35,7 +36,7 @@ BarDisplayClassRec barDisplayClassRec = {
 		.resources		= resources,
 		.num_resources		= XtNumber(resources),
 		.xrm_class		= NULLQUARK,
-		.destroy		= NULL,
+		.destroy		= Destroy,
 		.set_values		= SetValues,
 		.set_values_hook	= NULL,
 		.get_values_hook	= NULL,
@@ -66,6 +67,14 @@ Initialize(Widget request,
 	bd->barDisplay.format = XtNewString(bd->barDisplay.format);
 }
 
+static void
+Destroy(Widget w)
+{
+	BarDisplayObject bd = (BarDisplayObject) w;
+
+	XtFree(bd->barDisplay.format);
+}
+
 static Boolean
 SetValues(Widget old,
 	Widget req,
@@ -75,6 +84,11 @@ SetValues(Widget old,
 {
 	BarDisplayObject oldbd = (BarDisplayObject) old;
 	BarDisplayObject newbd = (BarDisplayObject) new;
+
+	if (newbd->barDisplay.format != oldbd->barDisplay.format) {
+		XtFree(oldbd->barDisplay.format);
+		newbd->barDisplay.format = XtNewString(newbd->barDisplay.format);
+	}
 
 #define NE(field)	(oldbd->barDisplay.field != newbd->barDisplay.field)
 	return XtIsRealized(XtParent(new)) && (NE(space) || NE(format));
@@ -145,7 +159,7 @@ Redisplay(Widget w,
 	Dimension label_width, total_width, label_height;
 	Boolean displayBars;
 	int i;
-	int x, y, bar_width;
+	int x, y, bar_width, v, len;
 	char buf[100];
 	int *values = gw->graph.values;
 	String *labels = gw->graph.labels;
@@ -168,12 +182,16 @@ Redisplay(Widget w,
 			x = 0;
 		
 		if (displayBars) {
+			v = values[i];
+			if (v < 0)
+				v = 0;
+			if (v > gw->graph.max_value)
+				v = gw->graph.max_value;
+			len = bar_width * v / gw->graph.max_value;
 			XFillRectangle(XtDisplay(w), XtWindow(w),
-				bd->graphDisplay.gc, x, y,
-				bar_width * values[i] / gw->graph.max_value,
+				bd->graphDisplay.gc, x, y, len,
 				bd->graphDisplay.font->max_bounds.ascent);
-			x += bar_width * values[i] / gw->graph.max_value +
-				bd->barDisplay.space;
+			x += len + bd->barDisplay.space;
 		}
 
 		snprintf(buf, sizeof(buf), bd->barDisplay.format,

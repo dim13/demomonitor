@@ -1,3 +1,4 @@
+#include <string.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include "GraphP.h"
@@ -18,7 +19,7 @@ static XtResource resources[] = {
 };
 #undef Offset
 
-static void ClassInitialize();
+static void ClassInitialize(void);
 static void Initialize(Widget, Widget, ArgList, Cardinal *);
 static void Redisplay(Widget, XEvent *, Region);
 static void Destroy(Widget);
@@ -145,21 +146,45 @@ StringListDestructor(XtAppContext app,
 	XrmValuePtr args,
 	Cardinal *num_args)
 {
-	String *list = (String *)to->addr;
+	String *list = *(String **)to->addr;
 	String *entry;
 
-	for (entry = list; entry != NULL; entry++)
-		XtFree((XtPointer)entry);
+	if (list == NULL)
+		return;
+	for (entry = list; *entry != NULL; entry++)
+		XtFree((XtPointer)*entry);
 
 	XtFree((XtPointer)list);
 }
 
 static void
-ClassInitialize()
+ClassInitialize(void)
 {
 	XtSetTypeConverter(XtRString, XtRStringTable,
 		CvtStringToStringList, NULL, 0,
 		XtCacheAll|XtCacheRefCount, StringListDestructor);
+}
+
+static void
+CheckEntries(GraphWidget gw)
+{
+	int i;
+
+	if (gw->graph.max_value <= 0) {
+		XtAppErrorMsg(XtWidgetToApplicationContext((Widget)gw),
+			"valueError", "maxValue", "WidgetError",
+			"maxValue must be positive", NULL, NULL);
+	}
+
+	if (gw->graph.labels == NULL)
+		return;
+	for (i = 0; i < gw->graph.num_entries; i++) {
+		if (gw->graph.labels[i] == NULL) {
+			XtAppErrorMsg(XtWidgetToApplicationContext((Widget)gw),
+				"counterError", "labels", "WidgetError",
+				"Fewer labels than graph entries", NULL, NULL);
+		}
+	}
 }
 
 static void
@@ -172,9 +197,13 @@ Initialize(Widget request,
 	int *values;
 	int i;
 
+	CheckEntries(gw);
+
 	values = (int *)XtCalloc(gw->graph.num_entries, sizeof(int));
-	for (i = 0; i < gw->graph.num_entries; i++)
-		values[i] = gw->graph.values[i];
+	if (gw->graph.values != NULL) {
+		for (i = 0; i < gw->graph.num_entries; i++)
+			values[i] = gw->graph.values[i];
+	}
 	gw->graph.values = values;
 }
 
@@ -191,6 +220,17 @@ SetValues(Widget old,
 	int i;
 
 #define NE(field)	(newgraph->graph.field != oldgraph->graph.field)
+#define EQ(field)	(!NE(field))
+	if (NE(num_entries) && (EQ(labels) || EQ(values))) {
+		XtAppErrorMsg(XtWidgetToApplicationContext(new),
+			"counterError", "numEntries", "WidgetError",
+			"Number of graph entries changed but not labels or values",
+			NULL, NULL);
+	}
+#undef EQ
+
+	CheckEntries(newgraph);
+
 	if (NE(values)) {
 		values = (int *)XtCalloc(newgraph->graph.num_entries, sizeof(int));
 		XtFree((XtPointer)oldgraph->graph.values);
@@ -199,15 +239,6 @@ SetValues(Widget old,
 		newgraph->graph.values = values;
 		return True;
 	}
-
-#define EQ(field)	(!NE(field))
-	if (NE(num_entries) && (EQ(labels) || EQ(values))) {
-		XtAppErrorMsg(XtWidgetToApplicationContext(new),
-			"counterError", "numEntries", "WidgetError",
-			"Number of graph entries changed but not labels of values",
-			NULL, NULL);
-	}
-#undef EQ
 
 	return NE(num_entries) || NE(labels) || NE(max_value);
 #undef NE
@@ -237,7 +268,7 @@ InsertChild(Widget w)
 		num_params = 2;
 		XtAppErrorMsg(XtWidgetToApplicationContext(w),
 			"childError", "number", "WidgetError",
-			"Children of class %s cannot be added to %n widgets",
+			"Children of class %s cannot be added to %s widgets",
 			params, &num_params);
 	}
 

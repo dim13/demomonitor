@@ -11,8 +11,8 @@ int *fields;
 
 void Timer(XtPointer, XtIntervalId *);
 void CreateGraphWidget(Widget);
-void GetGraphData();
-void quit();
+void GetGraphData(void);
+void quit(Widget, XEvent *, String *, Cardinal *);
 
 typedef struct {
 	int timeout;
@@ -30,7 +30,13 @@ XtResource resources[] = {
 		Offset(num_fields), XtRImmediate, (XtPointer) 3 },
 	{ "command", "Command", XtRString, sizeof(String),
 		Offset(command), XtRString,
-		"vmstat 1 2 | awk '{if (NR == 4) print $(NF-2), $(NF-1), $(NF)}'" },
+#ifdef __APPLE__
+		"iostat -c 2"
+#else
+		"vmstat 1 2"
+#endif
+		" | awk 'NR == 2 {for (i = 1; i <= NF; i++) c[$i] = i}"
+		" NR == 4 {print $c[\"us\"], $c[\"sy\"], $c[\"id\"]}'" },
 };
 #undef Offset
 
@@ -49,9 +55,9 @@ XtActionsRec actionsList[] = {
 };
 
 void
-quit()
+quit(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
-	exit(1);
+	exit(0);
 }
 
 int
@@ -109,13 +115,21 @@ Timer(XtPointer client_data, XtIntervalId *id)
 }
 
 void
-GetGraphData()
+GetGraphData(void)
 {
 	int status;
 	FILE *f;
 	int i;
 
 	f = popen(options.command, "r");
+	if (f == NULL) {
+		XtAppWarningMsg(app, "noData", "getGraphData",
+			"DemoLoadError", "Cannot run command",
+			NULL, NULL);
+		for (i = 0; i < options.num_fields; i++)
+			fields[i] = 0;
+		return;
+	}
 
 	for (i = 0; i < options.num_fields; i++) {
 		status = fscanf(f, "%d", &fields[i]);
