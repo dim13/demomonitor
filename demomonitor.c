@@ -47,6 +47,10 @@ XrmOptionDescRec optionsDesc[] = {
 String fallback_resources[] = {
 	"*graph.labels:		User\\nSystem\\nIdle",
 	"*graph.maxValue:	100",
+	"*graph.background:	gray85",
+	"*bar.foreground:	black",
+	"*bar.font:		-*-helvetica-medium-r-normal-*-12-*-*-*-*-*-iso8859-1",
+	"*bar.space:		4",
 	NULL
 };
 
